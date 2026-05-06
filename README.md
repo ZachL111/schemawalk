@@ -1,68 +1,40 @@
 # schemawalk
 
-`schemawalk` is a Ruby project for Databases. It turns plan reversible migrations and flag destructive schema operations into a small local model with readable fixtures and a direct verification command.
+`schemawalk` keeps a focused Ruby implementation around databases. The project goal is to plan reversible migrations and flag destructive schema operations.
 
-## Reading Schemawalk
+## Why This Exists
 
-Start with the README, then open `metadata/project.json` to check the constants behind the examples. After that, `fixtures/cases.csv` shows the compact path and `examples/extended_cases.csv` gives a wider look at the same rule.
+The project exists to keep a narrow engineering decision visible and testable. For this repo, that decision is how index fit and constraint risk should influence a review result.
 
-## What It Does
+## Schemawalk Review Notes
 
-- Includes extended examples for fixture rows, including `recovery` and `degraded`.
-- Documents constraint behavior tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
-- Adds a repository audit script that checks structure before running the language verifier.
+`recovery` and `baseline` are the cases worth reading first. They show the optimistic and cautious ends of the fixture.
 
-## Purpose
+## Capabilities
 
-This is not a wrapper around a service. It is a self-contained project that shows how the model behaves when demand, capacity, latency, risk, and weight move in different directions.
+- `fixtures/domain_review.csv` adds cases for index fit and join width.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/schemawalk-walkthrough.md` walks through the case spread.
+- The Ruby code includes a review path for `plan drift` and `index fit`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Files Worth Reading
+## Implementation Shape
 
-- `lib`: library code
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
+The implementation keeps the scoring rule plain: reward signal and confidence, preserve slack, penalize drag, then classify the result into a review lane.
 
-## Design Sketch
+The Ruby addition stays small enough to inspect in one sitting.
 
-The core is a scoring model over demand, capacity, latency, risk, and weight. That keeps schema shape, query checks, and fixture rows in one explicit decision path. The threshold is 150, with risk penalty 7, latency penalty 4, and weight bonus 4. The Ruby code keeps the module small and leans on Minitest for direct fixture checks.
-
-## Usage
+## Local Usage
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
-
-## Fixture Notes
-
-`surge` is the first example I would inspect because it lands on the `accept` path with a score of 156. The broader file also keeps `degraded` at -81 and `recovery` at 181, which gives the model a useful low-to-high spread.
-
 ## Verification
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+The verifier is intentionally local. It should fail if the fixture score math, lane assignment, or language-specific test drifts.
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
+## Roadmap
 
-## Limits
-
-The examples cover useful edges, not every edge. A larger version would add malformed-input tests, richer reports, and deeper domain parsers.
-
-## Next Directions
-
-- Add a comparison mode that shows how decisions change when one signal is adjusted.
-- Add a loader for `examples/extended_cases.csv` and promote selected cases into the language test suite.
-- Add a short report command that prints the score breakdown for a single scenario.
-- Add one more databases fixture that focuses on a malformed or borderline input.
-
-## Setup
-
-Use a normal shell with Ruby available on `PATH`. The verifier is written as a PowerShell script because the portfolio was assembled on Windows.
+The repository is intentionally scoped to local checks. I would expand it by adding adversarial fixtures before adding features.

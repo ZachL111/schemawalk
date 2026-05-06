@@ -1,0 +1,73 @@
+{
+  "repo": "schemawalk",
+  "language": "Ruby",
+  "category": "Databases",
+  "goal": "Plan reversible migrations and flag destructive schema operations.",
+  "review_model": {
+    "terms": [
+      "index fit",
+      "join width",
+      "constraint risk",
+      "plan drift"
+    ],
+    "lanes": [
+      "ship",
+      "watch",
+      "hold"
+    ],
+    "score": "signal * 2 + slack + confidence - drag * 3",
+    "purpose": "surface the domain-specific cases that need the most careful review"
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "focus": "index fit",
+      "signal": 50,
+      "slack": 49,
+      "drag": 27,
+      "confidence": 51,
+      "score": 119,
+      "lane": "watch"
+    },
+    {
+      "name": "stress",
+      "focus": "join width",
+      "signal": 49,
+      "slack": 48,
+      "drag": 20,
+      "confidence": 71,
+      "score": 157,
+      "lane": "ship"
+    },
+    {
+      "name": "edge",
+      "focus": "constraint risk",
+      "signal": 82,
+      "slack": 28,
+      "drag": 14,
+      "confidence": 51,
+      "score": 201,
+      "lane": "ship"
+    },
+    {
+      "name": "recovery",
+      "focus": "plan drift",
+      "signal": 74,
+      "slack": 46,
+      "drag": 9,
+      "confidence": 59,
+      "score": 226,
+      "lane": "ship"
+    },
+    {
+      "name": "stale",
+      "focus": "index fit",
+      "signal": 75,
+      "slack": 47,
+      "drag": 24,
+      "confidence": 48,
+      "score": 173,
+      "lane": "ship"
+    }
+  ]
+}
